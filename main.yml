@@ -1,0 +1,21 @@
+name: Main Workflow
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Run Check Modified Path Plugin
+        id: check_path
+        uses: ./ # Referenciando o diretório atual (seu plugin)
+        with:
+          path: 'path/to/check'
+
+      - name: Check Path Result
+        run: echo "Path modified: ${{ steps.check_path.outputs.modified }}"
