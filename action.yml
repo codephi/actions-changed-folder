@@ -1,12 +1,13 @@
 name: 'Check Changed Folder'
-description: 'Checks if a specified folder has been changed'
+description: 'Checks if specified folders have been changed'
 inputs:
-  path:
-    description: 'The path to check'
+  folders:
+    description: 'List of folders to check'
     required: true
+    default: '[]'
 outputs:
   changed:
-    description: 'Whether the folder was changed or not'
+    description: 'Object containing the name and change status of each folder'
 runs:
-  using: 'node16'
+  using: 'node12'
   main: 'index.js'
