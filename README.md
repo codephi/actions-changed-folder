@@ -1,6 +1,6 @@
 # Check Changed Folder
 
-This GitHub Action checks if specified folders have been changed.
+This GitHub Action checks if specified folders have been changed based on specific file patterns.
 
 ## Usage
 
@@ -11,31 +11,32 @@ To use this action, add the following step to your workflow:
   id: check_folders
   uses: codephi/actions-changed-folder
   with:
-    folders: '[{"name": "Folder1", "directory": "path/to/folder1"}, {"name": "Folder2", "directory": "path/to/folder2"}]'
+    folders: '{"Folder1": "services/app/*.js", "Folder2": "services/app/**"}'
 ```
-
-The `folders` input specifies the list of folders to check. Each folder object should have a `name` and `directory` field. The action will output an object named "changed" with the name of each folder and a boolean value indicating if it was changed or not.
+The `folders` input should contain an object with the name of each folder as the key and the file pattern to check as the value. The action will output an object named "changed" with the name and change status of each folder.
 
 You can then use the output value in subsequent steps of your workflow. For example:
 
 ```
-- name: Perform Task for Changed Folders
+- name: Perform Task for Folder1 if Changed
   run: |
-    ${{ each folder in steps.check_folders.outputs.changed }}
-    if [ ${{ folder.changed }} == 'true' ]; then
-      # Perform task for the changed folder
+    if [ ${{ steps.check_folders.outputs.changed.Folder1 }} == 'true' ]; then
+      echo "Performing task for Folder1..."
+      # Perform the task for Folder1
+    else
+      echo "Skipping task for Folder1 since it was not changed."
     fi
 ```
 
 ## Inputs
 
-- `folders` (required): A JSON string representing a list of folder objects to check. Each object should have a `name` and `directory` field.
+- `folders` (required): An object containing the name of each folder as the key and the file pattern to check as the value. The file pattern can use glob patterns to match specific files.
 
 ## Outputs
 
 - `changed`: An object containing the name and change status of each folder.
 
-Please make sure to replace the "folders" value in the usage example with your desired folder names and directories.
+Please make sure to replace the "folders" value in the usage example with your desired folder names and file patterns.
 
 ## License
 

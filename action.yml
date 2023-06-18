@@ -2,9 +2,9 @@ name: 'Check Changed Folder'
 description: 'Checks if specified folders have been changed'
 inputs:
   folders:
-    description: 'List of folders to check'
+    description: 'Object containing the name and path of each folder to check'
     required: true
-    default: '[]'
+    default: '{}'
 outputs:
   changed:
     description: 'Object containing the name and change status of each folder'

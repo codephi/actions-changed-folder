@@ -1,18 +1,21 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const fs = require('fs');
+const glob = require('glob');
 
 async function run() {
     try {
         const foldersToCheck = JSON.parse(core.getInput('folders'));
 
-        const changedFolders = await Promise.all(foldersToCheck.map(async (folder) => {
-            const isFolderChanged = await checkIfFolderChanged(folder.name, folder.directory);
-            return {
-                name: folder.name,
-                changed: isFolderChanged
-            };
-        }));
+        const changedFolders = await Promise.all(
+            Object.entries(foldersToCheck).map(async ([name, path]) => {
+                const isFolderChanged = await checkIfFolderChanged(name, path);
+                return {
+                    name,
+                    changed: isFolderChanged,
+                };
+            })
+        );
 
         core.setOutput('changed', JSON.stringify(changedFolders));
     } catch (error) {
@@ -20,10 +23,11 @@ async function run() {
     }
 }
 
-async function checkIfFolderChanged(name, directory) {
+async function checkIfFolderChanged(name, pattern) {
     const changedFiles = await getChangedFiles();
+    const filesToCheck = await getFilesToCheck(pattern);
 
-    return changedFiles.some(file => file.startsWith(`${directory}/`));
+    return filesToCheck.some(file => changedFiles.includes(file));
 }
 
 async function getChangedFiles() {
@@ -37,10 +41,22 @@ async function getChangedFiles() {
         owner,
         repo,
         base: sha,
-        head: `${sha}^`
+        head: `${sha}^`,
     });
 
     return compareCommitsResponse.data.files.map(file => file.filename);
+}
+
+async function getFilesToCheck(pattern) {
+    return new Promise((resolve, reject) => {
+        glob(pattern, { nodir: true }, (error, files) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(files);
+            }
+        });
+    });
 }
 
 run();
