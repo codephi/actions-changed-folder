@@ -9,7 +9,7 @@ async function run() {
 
         const changedFolders = await Promise.all(
             Object.entries(foldersToCheck).map(async ([name, path]) => {
-                const isFolderChanged = await checkIfFolderChanged(name, path);
+                const isFolderChanged = await checkIfFolderChanged(path);
                 return {
                     name,
                     changed: isFolderChanged,
@@ -23,7 +23,7 @@ async function run() {
     }
 }
 
-async function checkIfFolderChanged(name, pattern) {
+async function checkIfFolderChanged(pattern) {
     const changedFiles = await getChangedFiles();
     const filesToCheck = await getFilesToCheck(pattern);
 
