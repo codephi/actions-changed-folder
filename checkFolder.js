@@ -29,16 +29,13 @@ async function getChangedFiles() {
     const octokit = github.getOctokit(token);
 
     const { owner, repo } = github.context.repo;
-    const { sha } = github.context.payload.head_commit;
+    beforeSha = github.context.payload.before;
+    afterSha = github.context.payload.after;
 
-    console.log(github.context.repo)
-    console.log(github.context.payload.head_commit)
-
-    const compareCommitsResponse = await octokit.rest.repos.compareCommits({
+    const compareCommitsResponse = await octokit.rest.repos.compareCommitsWithBasehead({
         owner,
         repo,
-        base: sha,
-        head: '',
+        basehead: `${beforeSha}...${afterSha}`,
     });
 
     const files = [];
