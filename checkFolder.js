@@ -10,7 +10,7 @@ async function checkFolder() {
 
         Object.entries(foldersToCheck).map(async ([name, path]) => {
             changed[name] = false;
-            
+
             changedFiles.forEach((file) => {
                 if (file.startsWith(path)) {
                     changed[name] = true;
@@ -31,7 +31,7 @@ async function getChangedFiles() {
     const { owner, repo } = github.context.repo;
     const { sha } = github.context.payload.head_commit;
 
-    const compareCommitsResponse = await octokit.repos.compareCommits({
+    const compareCommitsResponse = await octokit.rest.repos.compareCommits({
         owner,
         repo,
         base: sha,
