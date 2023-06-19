@@ -18,6 +18,7 @@ async function checkFolder() {
              })
         })
 
+        console.error.log({ changed })
         core.setOutput('changed', JSON.stringify(changed));
     } catch (error) {
         core.setFailed(error.message);
