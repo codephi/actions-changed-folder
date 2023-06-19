@@ -18,8 +18,11 @@ async function checkFolder() {
              })
         })
 
-        console.log({ changed })
-        core.setOutput('changed', JSON.stringify(changed));
+        console.log(changed)
+
+        Object.entries(changed).forEach(([name, value]) => { 
+            core.setOutput(name, value ? 'true' : 'false');
+        })
     } catch (error) {
         core.setFailed(error.message);
     }

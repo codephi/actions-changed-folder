@@ -47,11 +47,8 @@ describe('checkFolder', () => {
 
         await checkFolder();
 
-        // Verifica se a saída 'changed' foi definida corretamente
-        expect(require('@actions/core').setOutput).toHaveBeenCalledWith('changed', JSON.stringify({
-            folder1: false,
-            folder2: true,
-        }));
+        expect(require('@actions/core').setOutput).toHaveBeenCalledWith('folder1', 'false');
+        expect(require('@actions/core').setOutput).toHaveBeenCalledWith('folder2', 'true');
     });
 
     it('should handle errors', async () => {
