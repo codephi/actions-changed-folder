@@ -9,17 +9,19 @@ jest.mock('@actions/core', () => ({
 
 jest.mock('@actions/github', () => ({
     getOctokit: jest.fn(() => ({
-        repos: {
-            compareCommits: jest.fn().mockResolvedValue({
-                data: {
-                    files: [
-                        { filename: 'path/to/file1' },
-                        { filename: 'path/to/file2' },
-                        { filename: 'other/path/file3' },
-                    ],
-                },
-            }),
-        },
+        rest: {
+            repos: {
+                compareCommits: jest.fn().mockResolvedValue({
+                    data: {
+                        files: [
+                            { filename: 'path/to/file1' },
+                            { filename: 'path/to/file2' },
+                            { filename: 'other/path/file3' },
+                        ],
+                    },
+                }),
+            },
+}
     })),
     context: {
         repo: {

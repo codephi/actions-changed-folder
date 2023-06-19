@@ -31,6 +31,9 @@ async function getChangedFiles() {
     const { owner, repo } = github.context.repo;
     const { sha } = github.context.payload.head_commit;
 
+    console.log(github.context.repo)
+    console.log(github.context.payload.head_commit)
+
     const compareCommitsResponse = await octokit.rest.repos.compareCommits({
         owner,
         repo,
