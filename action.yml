@@ -9,5 +9,5 @@ outputs:
   changed:
     description: 'Object containing the name and change status of each folder'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'index.js'
