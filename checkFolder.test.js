@@ -1,17 +1,20 @@
+const { getInput, setOutput, setFailed } = require('@actions/core');
+const { getOctokit, context } = require('@actions/github');
 const checkFolder = require('./checkFolder');
 
-// Mock dos módulos '@actions/core' e '@actions/github'
+// Mock das funções getInput, setOutput e setFailed
 jest.mock('@actions/core', () => ({
     getInput: jest.fn(),
     setOutput: jest.fn(),
     setFailed: jest.fn(),
 }));
 
+// Mock da função getOctokit
 jest.mock('@actions/github', () => ({
     getOctokit: jest.fn(() => ({
         rest: {
             repos: {
-                compareCommits: jest.fn().mockResolvedValue({
+                compareCommitsWithBasehead: jest.fn().mockResolvedValue({
                     data: {
                         files: [
                             { filename: 'path/to/file1' },
@@ -21,7 +24,7 @@ jest.mock('@actions/github', () => ({
                     },
                 }),
             },
-}
+        },
     })),
     context: {
         repo: {
@@ -29,38 +32,45 @@ jest.mock('@actions/github', () => ({
             repo: 'repo',
         },
         payload: {
-            head_commit: {
-                sha: 'commit_sha',
-            },
+            before: 'before_sha',
+            after: 'after_sha',
         },
     },
 }));
 
 describe('checkFolder', () => {
-    it('should correctly check modified folders', async () => {
-        // Mock da entrada 'folders' contendo duas pastas
-        const mockGetInput = jest.fn().mockReturnValue(JSON.stringify({
-            folder1: 'path/nojes',
-            folder2: 'other/path',
-        }));
-        require('@actions/core').getInput = mockGetInput;
-
-        await checkFolder();
-
-        expect(require('@actions/core').setOutput).toHaveBeenCalledWith('folder1', 'false');
-        expect(require('@actions/core').setOutput).toHaveBeenCalledWith('folder2', 'true');
+    afterEach(() => {
+        // Limpa os mocks após cada teste
+        jest.clearAllMocks();
     });
 
-    it('should handle errors', async () => {
-        // Mock de getInput para lançar um erro
-        const mockGetInput = jest.fn(() => {
-            throw new Error('Input error');
+    test('should set output to true if folder is changed', async () => {
+        // Configuração do mock para getInput
+        getInput.mockImplementation((name) => {
+            if (name === 'folder') {
+                return 'path/to';
+            }
         });
-        require('@actions/core').getInput = mockGetInput;
 
+        // Chama a função a ser testada
         await checkFolder();
 
-        // Verifica se setFailed foi chamado com a mensagem de erro adequada
-        expect(require('@actions/core').setFailed).toHaveBeenCalledWith('Input error');
+        // Verifica se a saída foi definida corretamente
+        expect(setOutput).toHaveBeenCalledWith('changed', true);
+    });
+
+    test('should set output to false if folder is not changed', async () => {
+        // Configuração do mock para getInput
+        getInput.mockImplementation((name) => {
+            if (name === 'folder') {
+                return 'other/path';
+            }
+        });
+
+        // Chama a função a ser testada
+        await checkFolder();
+
+        // Verifica se a saída foi definida corretamente
+        expect(setOutput).toHaveBeenCalledWith('changed', false);
     });
 });

@@ -1,13 +1,13 @@
-name: 'Check Changed Folder'
-description: 'Checks if specified folders have been changed'
+name: Check Folder Action
+description: Checks if a specified folder has been changed in a repository
 inputs:
-  folders:
-    description: 'Object containing the name and path of each folder to check'
+  folder:
+    description: 'The folder path to check for changes'
     required: true
-    default: '{}'
 outputs:
   changed:
-    description: 'Object containing the name and change status of each folder'
+    description: 'Indicates whether the folder has been changed'
+    value: ${{ steps.check_folder.outputs.changed }}
 runs:
   using: 'node16'
   main: 'index.js'

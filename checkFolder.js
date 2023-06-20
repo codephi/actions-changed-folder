@@ -3,26 +3,17 @@ const github = require('@actions/github');
 
 async function checkFolder() {
     try {
-        const foldersToCheck = JSON.parse(core.getInput('folders'));
+        const folderToCheck = core.getInput('folder');
         const changedFiles = await getChangedFiles();
 
-        const changed = {}
+        for (const file of changedFiles) { 
+            if (file.startsWith(folderToCheck)) { 
+                core.setOutput('changed', true);
+                break;
+            }
+        }
 
-        Object.entries(foldersToCheck).map(async ([name, path]) => {
-            changed[name] = false;
-
-            changedFiles.forEach((file) => {
-                if (file.startsWith(path)) {
-                    changed[name] = true;
-                }
-             })
-        })
-
-        console.log(changed)
-
-        Object.entries(changed).forEach(([name, value]) => { 
-            core.setOutput(name, value ? 'true' : 'false');
-        })
+        core.setOutput('changed', false);
     } catch (error) {
         core.setFailed(error.message);
     }

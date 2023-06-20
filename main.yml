@@ -1,33 +1,24 @@
-name: CI Workflow
+name: Check Folder Workflow
 
 on:
   push:
     branches:
       - main
-      - develop
-    paths:
-      - 'services/**'
-      - '.github/workflows/main.yml'
 
 jobs:
-  check_changed_folders:
+  check_folder_job:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Check if Folders were Changed
-        id: check_folders
-        uses: codephi/actions-changed-folder@v1
+        
+      - name: Run Check Folder Action
+        id: check_folder
+        uses: ./ # Path to your action folder
+        
         with:
-          folders: '{"Folder1": "services/app/*.js", "Folder2": "services/app/**"}'
-
-      - name: Perform Task for Folder1 if Changed
-        run: |
-          if [ ${{ steps.check_folders.outputs.changed.Folder1 }} == 'true' ]; then
-            echo "Performing task for Folder1..."
-            # Perform the task for Folder1
-          else
-            echo "Skipping task for Folder1 since it was not changed."
-          fi
+          folder: 'path/to/folder' # Set the directory path you want to check
+          
+      - name: Print Changed Status
+        run: echo "Folder changed: ${{ steps.check_folder.outputs.changed }}"
